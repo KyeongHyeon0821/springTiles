@@ -1,11 +1,16 @@
 package com.spring.springTiles.controller;
 
+import java.util.UUID;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.spring.springTiles.common.SecurityUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -47,6 +52,35 @@ public class TilesController {
 		return "redirect:/message/memberLogout?mid="+mid;
 	}
 	
+	@RequestMapping(value = "/passwordTest", method = RequestMethod.GET)
+	public String passwordTestGet() {
+		return "study/passwordTest";
+	}
 	
+	@RequestMapping(value = "/passwordTest", method = RequestMethod.POST)
+	public String passwordTestPost(Model model, String pwd) {
+		String salt = UUID.randomUUID().toString().substring(0, 8);
+		pwd = salt + pwd;
+		
+		SecurityUtil security =  new SecurityUtil();
+		String encPwd = security.encryptSHA256(pwd);
+		
+		model.addAttribute("encPwd", encPwd);
+		model.addAttribute("pwd", pwd);
+		model.addAttribute("dbPwd", salt + encPwd);
+		return "study/passwordTest";
+	}
 	
+	@RequestMapping(value = "/uuidTest", method = RequestMethod.GET)
+	public String uuidTestGet() {
+		return "study/uuidTest";
+	}
+	
+	@RequestMapping(value = "/uuidTest", method = RequestMethod.POST)
+	public String uuidTestPost(Model model ,String uid) {
+		UUID uuid = UUID.randomUUID();
+		model.addAttribute("uuid", uuid);
+		model.addAttribute("uid", uid);
+		return "study/uuidTest";
+	}
 }
